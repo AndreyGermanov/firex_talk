@@ -1,0 +1,3 @@
+rootProject.name = 'firex_talk'
+
+include ':app'
