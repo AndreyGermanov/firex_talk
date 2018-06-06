@@ -28,13 +28,14 @@ const Collection = class {
             return [];
         }
         if (typeof(props) !== 'object') {
-            console.trace("Incorrect filter value- "+props);
+            console.trace("Incorrect filter value- "+JSON.stringify(props));
             return [];
         }
         var result = this.items;
         for (const key in props) {
             const value = props[key];
-            result = result.filter(item => !isNull(item) && item.hasOwnProperty(key) && item[key] === value);
+            result = result.filter(item => !isNull(item) &&
+                item.hasOwnProperty(key) && item[key] === value);
             if (!result.length) {
                 return result;
             }
@@ -49,12 +50,15 @@ const Collection = class {
      * @return Found model or null if nothing found
      */
     getById(id) {
+        if (isNull(id)) {
+            return null;
+        }
         const result = this.getList({id:id});
-        if (!result || !result[length]) {
+        if (!result || !result.length) {
             return null;
         } else {
             return result[0];
-        }
+        };
     }
 
     /**
@@ -69,25 +73,33 @@ const Collection = class {
             return false;
         }
         if (!(item instanceof this.modelClass)) {
-            console.trace("Item is not correct model for this collection "+item);
+            console.trace("Item is not correct model for this collection "+JSON.stringify(item));
+            return false;
+        }
+        if (!item.hasOwnProperty("id") || !item.id) {
+            console.trace("Item does not have ID"+JSON.stringify(item));
             return false;
         }
         if (this.getById(item.id)) {
-            console.trace("Item with specified ID already exists in collection "+item);
+            console.trace("Item with specified ID already exists in collection "+JSON.stringify(item));
             return false;
         }
         this.items.push(item);
+        return this.items.indexOf(item);
     }
 
     /**
      * Method removes item with specified id from collection
      * @param id: ID of item to remove
-     * @return: Removed item or null if nothing removed
+     * @return: Removed item or false if nothing removed
      */
     delete(id) {
+        if (isNull(id)) {
+            return false;
+        }
         const index = this.items.findIndex(item => item.id === id);
         if (index === -1) {
-            return null;
+            return false;
         }
         const item = this.items[index];
         this.items.splice(index,1);
@@ -106,21 +118,23 @@ const Collection = class {
             console.trace("Item to update not specified");
             return null;
         }
-        if (typeof(item) !== 'object' || !item.hasOwnProperty('id') || !(item instanceof this.modelClass)) {
+        if (typeof(item) !== 'object' ||
+            !item.hasOwnProperty('id') ||
+            !(item instanceof this.modelClass) ||
+            !item.id
+        ) {
             console.trace("Incorrect item provided");
             return null;
         }
         const index = this.items.findIndex(collectionItem => collectionItem.id === item.id);
         if (index !== -1) {
-            this.items.splice(index,1);
+            this.items[index] = item;
+        } else if (upsert) {
+            this.add(item);
         }
-        if (index !== -1 || upsert) {
-            this.items.add(item);
-        }
-        return this.items.indexOf(item);
+        const result = this.items.indexOf(item);
+        return  result === -1 ? null : result;
     }
-
-
 }
 
 export default Collection;
