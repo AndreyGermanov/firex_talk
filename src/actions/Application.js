@@ -10,7 +10,9 @@ const ApplicationActions = class {
         this.actions = {
             CHANGE_IS_LOGIN: 'Application_CHANGE_IS_LOGIN',
             CHANGE_IS_SIDE_MENU_OPENED: 'Application_CHANGE_IS_SIDE_MENU_OPENED',
-            CHANGE_SCREEN: 'Application_CHANGE_SCREEN'
+            CHANGE_SCREEN: 'Application_CHANGE_SCREEN',
+            CHANGE_CHAT_MODE: 'Application_CHANGE_CHAT_MODE',
+            CHANGE_PRIVATE_CHAT_MODE: 'Application_CHANGE_PRIVATE_CHAT_MODE'
         }
 
         // List of application screens
@@ -18,6 +20,19 @@ const ApplicationActions = class {
             CHAT: 'Application_CHAT_SCREEN',
             SETTINGS: 'Application_SETTINGS_SCREEN',
             USER_PROFILE: 'Application_USER_PROFILE_SCREEN'
+        }
+
+        // List of chat screen modes
+        this.chatModes = {
+            PRIVATE: 'Application_CHAT_SCREEN_PRIVATE',
+            PUBLIC: 'Application_CHAT_SCREEN_PUBLIC',
+        };
+
+        // Mode of private chat (it can show either list of users to choose for private chat,
+        // or chat screen with selected user)
+        this. privateChatModes = {
+            USERS_LIST: 'Application_PRIVATE_CHAT_USERS_LIST',
+            CHAT: 'Application_PRIVATE_CHAT_CHAT'
         }
     }
 
@@ -42,6 +57,20 @@ const ApplicationActions = class {
     changeApplicationScreen(value) {
         return {
             type: this.actions.CHANGE_SCREEN,
+            value: value
+        }
+    }
+
+    changeChatMode(value) {
+        return {
+            type: this.actions.CHANGE_CHAT_MODE,
+            value: value
+        }
+    }
+
+    changePrivateChatMode(value) {
+        return {
+            type: this.actions.CHANGE_PRIVATE_CHAT_MODE,
             value: value
         }
     }
